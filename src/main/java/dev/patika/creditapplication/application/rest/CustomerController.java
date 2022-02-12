@@ -26,8 +26,13 @@ public class CustomerController {
     }
 
     @GetMapping
-    public CustomerResponse retrieve(@RequestParam Long customerId) {
-        final Customer customer = service.retrieve(customerId);
+    public CustomerResponse retrieve(@RequestParam(required = false) Long id, @RequestParam(required = false) Long identityNumber) {
+        Customer customer = null;
+        if (id == null) {
+            customer = service.retrieveByIdentityNumber(identityNumber);
+        } else {
+            customer = service.retrieve(id);
+        }
         return CustomerResponse.from(customer);
     }
 }

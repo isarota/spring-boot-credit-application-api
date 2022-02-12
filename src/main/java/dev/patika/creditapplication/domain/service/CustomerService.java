@@ -1,24 +1,31 @@
 package dev.patika.creditapplication.domain.service;
 
 import dev.patika.creditapplication.domain.Customer;
+import dev.patika.creditapplication.infrastructure.jpa.customer.CustomerEntity;
+import dev.patika.creditapplication.infrastructure.jpa.customer.CustomerJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
+
+    private final CustomerJpaRepository jpaRepository;
+
     public Long create(Customer customer) {
-        return 1L;
+        final CustomerEntity entity = jpaRepository.save(customer.toEntity());
+        return entity.getId();
     }
 
     public Customer retrieve(Long customerId) {
-        return Customer.builder()
-                .id(1L)
-                .identityNumber(1L)
-                .fullName("Isa Kilikya")
-                .salary(4500.0)
-                .phoneNumber("00905363630000")
-                .yearOfBirth(1990)
-                .build();
+        final Optional<CustomerEntity> entityOptional = jpaRepository.findById(customerId);
+        return Customer.from(entityOptional.orElse(null));
+    }
+
+    public Customer retrieveByIdentityNumber(Long customerIdentityNumber) {
+        final Optional<CustomerEntity> entityOptional = jpaRepository.findByIdentityNumber(customerIdentityNumber);
+        return Customer.from(entityOptional.orElse(null));
     }
 }
