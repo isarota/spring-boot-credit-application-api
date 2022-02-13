@@ -28,4 +28,9 @@ public class CustomerService {
         final Optional<CustomerEntity> entityOptional = jpaRepository.findByIdentityNumber(customerIdentityNumber);
         return Customer.from(entityOptional.orElse(null));
     }
+
+    // used by the other services
+    public CustomerEntity retrieveEntityById(Long customerId) {
+        return jpaRepository.findById(customerId).get();
+    }
 }

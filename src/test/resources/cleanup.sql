@@ -1,1 +1,2 @@
-truncate table customer;
+DELETE FROM credit_application;
+DELETE FROM customer;

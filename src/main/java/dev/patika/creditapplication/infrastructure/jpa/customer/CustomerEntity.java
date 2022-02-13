@@ -1,16 +1,15 @@
 package dev.patika.creditapplication.infrastructure.jpa.customer;
 
 import dev.patika.creditapplication.infrastructure.jpa.common.BaseEntity;
+import dev.patika.creditapplication.infrastructure.jpa.creditapplication.CreditApplicationEntity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Getter
 @Setter
-@Entity(name = "customer")
+@Entity
 @Table(name = "customer")
 public class CustomerEntity extends BaseEntity {
     @Column(nullable = false)
@@ -23,4 +22,7 @@ public class CustomerEntity extends BaseEntity {
     private String phoneNumber;
     @Column(nullable = false)
     private Integer yearOfBirth;
+
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private CreditApplicationEntity creditApplication;
 }
