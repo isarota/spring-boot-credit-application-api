@@ -1,8 +1,6 @@
 package dev.patika.creditapplication.domain.service;
 
-import dev.patika.creditapplication.domain.CreditApplication;
-import dev.patika.creditapplication.domain.CreditApplicationStatus;
-import dev.patika.creditapplication.domain.Customer;
+import dev.patika.creditapplication.domain.*;
 import dev.patika.creditapplication.infrastructure.jpa.creditapplication.CreditApplicationEntity;
 import dev.patika.creditapplication.infrastructure.jpa.creditapplication.CreditApplicationJpaRepository;
 import dev.patika.creditapplication.infrastructure.jpa.customer.CustomerEntity;
@@ -17,6 +15,12 @@ public class CreditApplicationService {
 
     private final CreditApplicationJpaRepository jpaRepository;
     private final CustomerService customerService;
+    private final CreditScoreService creditScoreService;
+
+    private static final Integer MODERATE_SALARY = 5000;
+
+    private static final Double CREDIT_LIMIT_LOW = 10000.0;
+    private static final Double CREDIT_LIMIT_MODERATE = 20000.0;
 
     public Long create(CreditApplication creditApplication) {
         final CustomerEntity customerEntity = customerService.retrieveEntityById(creditApplication.getCustomerId());
@@ -34,9 +38,11 @@ public class CreditApplicationService {
         final Optional<CreditApplicationEntity> entityOptional = jpaRepository.findByCustomer(customer.toEntity());
         final CreditApplicationEntity entity = entityOptional.get();
 
-        entity.setCreditScore(600.0);  // TODO: Hardcoded
+        final Double creditScore = creditScoreService.query(customer);
 
-        if (entity.getCreditScore() < 500) {  // TODO: Hardcoded
+        entity.setCreditScore(creditScore);
+
+        if (entity.getCreditScore() < CreditScoreLimit.LOWER_LIMIT.getLimit()) {
             entity.setStatus(CreditApplicationStatus.REJECTED);
             jpaRepository.save(entity);
             return CreditApplication.from(entity);
@@ -44,19 +50,20 @@ public class CreditApplicationService {
             entity.setStatus(CreditApplicationStatus.APPROVED);
         }
 
-//        TODO: Hardcoded part
-        if (entity.getCreditScore() < 1000) {
-            if (customer.getSalary() < 5000) {
-                entity.setCreditLimit(10000.0);
-            } else {
-                entity.setCreditLimit(20000.0);
-            }
-        } else {
-            // TODO: aylik_gelir * kredi_limit_carpani
-            entity.setCreditLimit(customer.getSalary() * 4.0);
-        }
-
+        setCreditLimit(customer, entity);
         jpaRepository.save(entity);
         return CreditApplication.from(entity);
+    }
+
+    private void setCreditLimit(Customer customer, CreditApplicationEntity entity) {
+        if (entity.getCreditScore() < CreditScoreLimit.UPPER_LIMIT.getLimit()) {
+            if (customer.getSalary() < MODERATE_SALARY) {
+                entity.setCreditLimit(CREDIT_LIMIT_LOW);
+            } else {
+                entity.setCreditLimit(CREDIT_LIMIT_MODERATE);
+            }
+        } else {
+            entity.setCreditLimit(customer.getSalary() * Constants.CREDIT_LIMIT_FACTOR);
+        }
     }
 }
