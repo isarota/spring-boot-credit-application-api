@@ -7,7 +7,35 @@ Credit Application API developed with Spring Boot
 ### Proje Konusu: 
 Bir kredi başvuru sistemi için, kredi başvuru isteklerini alıp ilgili kriterlere göre müşteriye kredi
 sonucunu dönen servisin içinde yer alacak restful bir uygulamanın Spring Boot framework kullanılarak
-yazılması ve isteğe bağlı olarak önyüzünün yazılması
+yazılması ve isteğe bağlı olarak önyüzünün yazılması.
+
+Gereksinimler dokümanın en alt kısmında bulunmaktadır.
+
+### Projenin Çalışabilmesi için Gereken Komutlar
+
+`infra-up.sh` scripti çalıştırılarak Postgresql container'ının çalıştırılması gerekiyor.
+```shell
+sh infra-up.sh
+```
+
+Projeyle işimiz bittiğinde `infra-down.sh` scripti çalıştırılarak container'lerimizi silebiliriz.
+```shell
+sh infra-down.sh
+```
+
+### Proje Geliştirilirken Uygulanan Yaklaşımlar
+Spring Boot projesini geliştirirken Hexagonal Architecture kullandım.
+Bu mimariyi uygularken 
+eğitmenimiz Mustafa Güneş'in [geliştirdiği projeyi](https://github.com/Payten-Java-Spring-Bootcamp/bootcamp-examples) ve 
+Baeldung'un [Hexagonal Architecture yazısıyla](https://www.baeldung.com/hexagonal-architecture-ddd-spring) beraber paylaştığı 
+[GitHub repository'sini](https://github.com/eugenp/tutorials/tree/master/ddd/src/main/java/com/baeldung/dddhexagonalspring) inceledim.
+Klasik Layered Architecture'a kıyasla katmanları daha çok domain'deki mantık yapısı üzerinden konumlandıran
+bu yaklaşımın daha ölçeklenebilir olduğunu düşündüm.
+Hexagonal Architecture'a göre yapılan her iş kendi katmanında yapılır.
+Diğer katmanları etkilemeden kendi katmanımıza odaklanabiliriz.
+
+Veritabanı olarak PostgreSQL kullandım. Çünkü PostgreSQL hem güçlü mimarisi hem de donanımlı destekçileriyle
+gün geçtikçe Java dünyasında yerini sağlamlaştıran veritabanlarından bir tanesi.
 
 ### Gereksinimler:
 
